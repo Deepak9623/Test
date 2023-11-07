@@ -1,11 +1,11 @@
 package com.example.crud.services.impl;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 
 import com.example.crud.entity.Employee;
 import com.example.crud.payload.EmployeeDto;
@@ -31,26 +31,35 @@ public class EmplyeeServiceImpl implements EmployeeService {
 
 	@Override
 	public EmployeeDto getEmployeeById(Integer id) {
-		// TODO Auto-generated method stub
-		return null;
+         Employee employee = employeeRepo.findById(id).orElseThrow();
+         return modelMapper.map(employee, EmployeeDto.class);
 	}
 
 	@Override
 	public List<EmployeeDto> getAllEmployees() {
-		// TODO Auto-generated method stub
-		return null;
+        List<Employee> employee = employeeRepo.findAll();
+		
+		List<EmployeeDto> employeeDtos = employee.stream().map(x->modelMapper.map(x, EmployeeDto.class)).collect(Collectors.toList());
+		return employeeDtos;
 	}
 
 	@Override
 	public EmployeeDto updateEmployee(EmployeeDto employee, Integer id) {
-		// TODO Auto-generated method stub
-		return null;
+		Employee employee1 = employeeRepo.findById(id).orElseThrow();
+		employee1.setFirstName(employee.getFirstName());
+		employee1.setLastName(employee.getLastName());
+		employee1.setEmail(employee.getEmail());
+		employee1.setAge(employee.getAge());
+		
+		Employee updatedEmployee = employeeRepo.save(employee1);
+		return modelMapper.map(updatedEmployee, EmployeeDto.class);
+		
 	}
 
 	@Override
 	public void deleteEmployee(Integer id) {
-		// TODO Auto-generated method stub
-		
+		Employee employee = employeeRepo.findById(id).orElseThrow();
+		employeeRepo.delete(employee);
 	}
 
 }
